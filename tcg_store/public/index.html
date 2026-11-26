@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokéStore TCG | Catálogo e Inventario</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="js/app.js" defer></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-flex">
+            <div>
+                <h1>⚡ PokéStore TCG</h1>
+                <p>Gestión de Catálogo, Inventario y Ventas</p>
+            </div>
+            <nav class="tabs">
+                <button class="tab-btn active" data-tab="catalogo">Catálogo Productos</button>
+                <button class="tab-btn" data-tab="admin">Administrar Inventario</button>
+                <button class="tab-btn" data-tab="ventas">Registrar Venta</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="alerta" class="alerta oculto"></div>
+
+        <!-- CATÁLOGO Y BUSCADOR -->
+        <section id="tab-catalogo" class="tab-content active">
+            <div class="filtros-card">
+                <input type="text" id="filtro-nombre" placeholder="Buscar carta, sobre o caja...">
+                <select id="filtro-categoria">
+                    <option value="">Todas las categorías</option>
+                    <option value="Carta Individual">Carta Individual</option>
+                    <option value="Sobre">Sobre</option>
+                    <option value="Caja">Caja</option>
+                    <option value="Accesorio">Accesorio</option>
+                </select>
+                <select id="filtro-rareza">
+                    <option value="">Todas las rarezas</option>
+                    <option value="Común">Común</option>
+                    <option value="Infrecuente">Infrecuente</option>
+                    <option value="Rara">Rara</option>
+                    <option value="Holo">Holo</option>
+                    <option value="Ultra Rara">Ultra Rara</option>
+                    <option value="N/A">N/A</option>
+                </select>
+                <input type="number" id="filtro-precio" placeholder="Precio máx ($)" min="0">
+                <button id="btn-filtrar" class="btn btn-primary">Buscar</button>
+                <button id="btn-limpiar-filtros" class="btn btn-secondary">Limpiar</button>
+            </div>
+
+            <div id="grid-catalogo" class="grid-productos"></div>
+        </section>
+
+        <!-- ADMINISTRACIÓN DE INVENTARIO -->
+        <section id="tab-admin" class="tab-content">
+            <div class="admin-layout">
+                <div class="card">
+                    <h2 id="form-titulo">Agregar Producto</h2>
+                    <form id="form-producto">
+                        <input type="hidden" id="prod-id">
+                        
+                        <label>Nombre del producto</label>
+                        <input type="text" id="prod-nombre" required placeholder="Ej. Charizard ex">
+
+                        <label>Categoría</label>
+                        <select id="prod-categoria" required>
+                            <option value="Carta Individual">Carta Individual</option>
+                            <option value="Sobre">Sobre</option>
+                            <option value="Caja">Caja</option>
+                            <option value="Accesorio">Accesorio</option>
+                        </select>
+
+                        <label>Rareza</label>
+                        <select id="prod-rareza">
+                            <option value="N/A">N/A (Sobres/Cajas/Accesorios)</option>
+                            <option value="Común">Común</option>
+                            <option value="Infrecuente">Infrecuente</option>
+                            <option value="Rara">Rara</option>
+                            <option value="Holo">Holo</option>
+                            <option value="Ultra Rara">Ultra Rara</option>
+                        </select>
+
+                        <div class="row-2">
+                            <div>
+                                <label>Precio ($ MXN)</label>
+                                <input type="number" id="prod-precio" step="0.01" min="0" required>
+                            </div>
+                            <div>
+                                <label>Existencias (Stock)</label>
+                                <input type="number" id="prod-stock" min="0" required>
+                            </div>
+                        </div>
+
+                        <label>URL de Imagen (opcional)</label>
+                        <input type="url" id="prod-imagen" placeholder="https://...">
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary" id="btn-guardar">Guardar</button>
+                            <button type="button" class="btn btn-secondary oculto" id="btn-cancelar">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>Control de Inventario y Alertas de Reposición</h2>
+                    <p class="subtexto">⚠️ Los productos con menos de 5 unidades aparecen marcados para reposición.</p>
+                    <div class="tabla-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Categoría</th>
+                                    <th>Precio</th>
+                                    <th>Stock</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-inventario"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- REGISTRO DE VENTAS -->
+        <section id="tab-ventas" class="tab-content">
+            <div class="admin-layout">
+                <div class="card">
+                    <h2>Nueva Venta</h2>
+                    <div class="venta-selector">
+                        <select id="venta-producto"></select>
+                        <input type="number" id="venta-cantidad" value="1" min="1">
+                        <button type="button" id="btn-agregar-carrito" class="btn btn-primary">Agregar</button>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cant.</th>
+                                <th>Subtotal</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="carrito-body"></tbody>
+                    </table>
+
+                    <div class="total-box">
+                        <span>Total a cobrar:</span>
+                        <strong id="venta-total">$0.00</strong>
+                    </div>
+                    <button id="btn-confirmar-venta" class="btn btn-success w-100">Confirmar Venta y Descontar Stock</button>
+                </div>
+
+                <div class="card">
+                    <h2>Historial de Ventas Recientes</h2>
+                    <div id="historial-ventas"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
